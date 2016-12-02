@@ -37,7 +37,7 @@ public class Day02 {
             combination.add(lastButton);
         }
 
-        combination.stream().mapToInt(Button::getValue).forEach(System.out::print);
+        combination.stream().mapToInt(Button::getValue).forEach(value -> System.out.format("%X", value));
     }
 
     private static List<Direction> toDirections(String string) {
@@ -45,31 +45,39 @@ public class Day02 {
     }
 
     private static Button getButtonField() {
-        Button button1 = new Button(1);
-        Button button2 = new Button(2);
-        Button button3 = new Button(3);
-        Button button4 = new Button(4);
-        Button button5 = new Button(5);
-        Button button6 = new Button(6);
-        Button button7 = new Button(7);
-        Button button8 = new Button(8);
-        Button button9 = new Button(9);
+        Button button1 = new Button(0x01);
+        Button button2 = new Button(0x02);
+        Button button3 = new Button(0x03);
+        Button button4 = new Button(0x04);
+        Button button5 = new Button(0x05);
+        Button button6 = new Button(0x06);
+        Button button7 = new Button(0x07);
+        Button button8 = new Button(0x08);
+        Button button9 = new Button(0x09);
+        Button buttonA = new Button(0x0A);
+        Button buttonB = new Button(0x0B);
+        Button buttonC = new Button(0x0C);
+        Button buttonD = new Button(0x0D);
 
-        button2.setNeighbor(Direction.LEFT, button1);
-        button2.setNeighbor(Direction.RIGHT, button3);
-        button2.setNeighbor(Direction.DOWN, button5);
+        button3.setNeighbor(Direction.UP, button1);
+        button3.setNeighbor(Direction.LEFT, button2);
+        button3.setNeighbor(Direction.RIGHT, button4);
+        button3.setNeighbor(Direction.DOWN, button7);
 
-        button4.setNeighbor(Direction.UP, button1);
-        button4.setNeighbor(Direction.RIGHT, button5);
-        button4.setNeighbor(Direction.DOWN, button7);
-
-        button6.setNeighbor(Direction.UP, button3);
+        button6.setNeighbor(Direction.UP, button2);
         button6.setNeighbor(Direction.LEFT, button5);
-        button6.setNeighbor(Direction.DOWN, button9);
+        button6.setNeighbor(Direction.RIGHT, button7);
+        button6.setNeighbor(Direction.DOWN, buttonA);
 
-        button8.setNeighbor(Direction.UP, button5);
+        button8.setNeighbor(Direction.UP, button4);
         button8.setNeighbor(Direction.LEFT, button7);
         button8.setNeighbor(Direction.RIGHT, button9);
+        button8.setNeighbor(Direction.DOWN, buttonC);
+
+        buttonB.setNeighbor(Direction.UP, button7);
+        buttonB.setNeighbor(Direction.LEFT, buttonA);
+        buttonB.setNeighbor(Direction.RIGHT, buttonC);
+        buttonB.setNeighbor(Direction.DOWN, buttonD);
 
         return button5;
     }
