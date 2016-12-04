@@ -4,6 +4,8 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.marat.advent.common.Util;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,15 +18,20 @@ public class Day04 {
     public static void main(String[] args) {
         Pattern delimiter = Pattern.compile("\\s+");
 
-        int sum = Util.readElementsWithDelimiter("day04/input.txt", delimiter)
+        List<String> keyWords = Arrays.asList("north", "pole");
+
+        int sectorId = Util.readElementsWithDelimiter("day04/input.txt", delimiter)
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotEmpty)
                 .map(Door::new)
                 .filter(Door::isValid)
-                .mapToInt(Door::getSectorId)
-                .sum();
+                .filter(door -> keyWords.stream().allMatch(keyWord -> door.getName().contains(keyWord)))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("Could not find root with key words'%s'", keyWords)))
+                .getSectorId();
 
-        System.out.println(sum);
+        System.out.println(sectorId);
     }
 
     @Data
@@ -32,20 +39,22 @@ public class Day04 {
 
         private static final Pattern PATTERN = Pattern.compile("([a-z\\-]+)-(\\d+)\\[([a-z]+)]");
 
-        private final String name;
+        private final String encryptedName;
         private final int sectorId;
         private final String givenChecksum;
         private final String checksum;
+        private final String name;
 
         public Door(String input) {
             Matcher matcher = PATTERN.matcher(input);
 
             if (matcher.matches()) {
-                name = matcher.group(1);
+                encryptedName = matcher.group(1);
                 sectorId = Integer.parseInt(matcher.group(2));
                 givenChecksum = matcher.group(3);
 
-                checksum = computeChecksum(name, givenChecksum.length());
+                checksum = computeChecksum(encryptedName, givenChecksum.length());
+                name = decrypt(encryptedName, sectorId);
             } else {
                 throw new IllegalArgumentException(String.format("Cannot parse input as room: '%s'", input));
             }
@@ -53,6 +62,27 @@ public class Day04 {
 
         public boolean isValid() {
             return checksum.equals(givenChecksum);
+        }
+
+        private static String decrypt(String encryptedName, int sectorId) {
+            return encryptedName.chars()
+                    .mapToObj(i -> (char) i)
+                    .map(c -> shift(c, sectorId))
+                    .collect(Collector.of(
+                            StringBuilder::new,
+                            StringBuilder::append,
+                            StringBuilder::append,
+                            StringBuilder::toString));
+        }
+
+        private static char shift(char c, int sectorId) {
+            if (c == '-') {
+                return ' ';
+            } else {
+                int shift = sectorId % 26;
+
+                return (char) ('a' + ((c - 'a' + shift) % 26));
+            }
         }
 
         private static String computeChecksum(String name, int length) {
