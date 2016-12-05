@@ -12,16 +12,21 @@ public class Day05 {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
 
         char[] pw = new char[8];
-        int pwi = 0;
+        int pwc = 0;
 
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
             String hash = DatatypeConverter.printHexBinary(md5.digest((doorId + i).getBytes()));
 
             if (hash.startsWith("00000")) {
-                pw[pwi++] = hash.charAt(5);
+                int index = hash.charAt(5) - '0';
+
+                if (index < pw.length && pw[index] == 0) {
+                    pw[index] = hash.charAt(6);
+                    pwc++;
+                }
             }
 
-            if (pwi >= pw.length) {
+            if (pwc >= pw.length) {
                 break;
             }
         }
