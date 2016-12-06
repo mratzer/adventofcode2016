@@ -3,21 +3,48 @@ package org.marat.advent.day06;
 import org.apache.commons.lang3.StringUtils;
 import org.marat.advent.common.Util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Day06 {
 
     public static void main(String[] args) {
         Pattern delimiter = Pattern.compile("\\s+");
 
-        List<String> lines = Util.readElementsWithDelimiter("day06/input.txt", delimiter)
+        final int length = 8;
+
+        List<Map<Character, AtomicInteger>> counts = new ArrayList<>(length);
+
+        for (int i = 0; i < length; i++) {
+            counts.add(new TreeMap<>());
+        }
+
+        Util.readElementsWithDelimiter("day06/input.txt", delimiter)
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toList());
+                .forEach(line -> {
+                    for (int i = 0; i < length; i++) {
+                        counts.get(i).computeIfAbsent(line.charAt(i), c -> new AtomicInteger()).getAndIncrement();
+                    }
+                });
 
-        System.out.println(lines);
+        char[] chars = new char[length];
+
+        for (int i = 0; i < length; i++) {
+            Character key = counts.get(i).entrySet().stream()
+                    .sorted((o1, o2) -> o2.getValue().get() - o1.getValue().get())
+                    .findFirst()
+                    .orElseThrow(IllegalStateException::new)
+                    .getKey();
+
+            chars[i] = key;
+        }
+
+        System.out.println(new String(chars));
     }
 
 }
