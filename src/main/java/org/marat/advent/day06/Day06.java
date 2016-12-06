@@ -36,7 +36,7 @@ public class Day06 {
 
         for (int i = 0; i < length; i++) {
             Character key = counts.get(i).entrySet().stream()
-                    .sorted((o1, o2) -> o2.getValue().get() - o1.getValue().get())
+                    .sorted((o1, o2) -> o1.getValue().get() - o2.getValue().get())
                     .findFirst()
                     .orElseThrow(IllegalStateException::new)
                     .getKey();
