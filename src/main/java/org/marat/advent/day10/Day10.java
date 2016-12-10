@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Day10 {
 
@@ -42,6 +43,15 @@ public class Day10 {
                 .orElseThrow(IllegalStateException::new);
 
         System.out.println(comparingBot.getId());
+
+        int result = Stream.of(
+                factory.getOutputsById().get(0),
+                factory.getOutputsById().get(1),
+                factory.getOutputsById().get(2))
+                .mapToInt(output -> output.getChips().stream().mapToInt(Chip::getValue).sum())
+                .reduce(1, (x, y) -> x * y);
+
+        System.out.println(result);
     }
 
     static class Command {
@@ -103,9 +113,11 @@ public class Day10 {
 
         private final int id;
 
+        private final List<Chip> chips = new ArrayList<>();
+
         @Override
         public void accept(Chip chip) {
-
+            chips.add(chip);
         }
     }
 
@@ -150,6 +162,10 @@ public class Day10 {
 
         Map<Integer, Bot> getBotsById() {
             return Collections.unmodifiableMap(bots);
+        }
+
+        Map<Integer, Output> getOutputsById() {
+            return Collections.unmodifiableMap(outputs);
         }
 
         private void createOutputs() {
